@@ -5,6 +5,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 
+import locationsRouter from "./rest/locations";
+
 dotenv.config();
 
 (async function () {
@@ -12,6 +14,8 @@ dotenv.config();
 
 	app.use(cors());
 	app.use(bodyParser.json());
+
+	app.use("/locations", locationsRouter);
 
 	const httpServer = http.createServer(app);
 

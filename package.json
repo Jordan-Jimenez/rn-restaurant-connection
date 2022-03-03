@@ -17,7 +17,9 @@
 		"cors": "^2.8.5",
 		"dotenv": "^16.0.0",
 		"express": "^4.17.2",
-		"reflect-metadata": "^0.1.13"
+		"reflect-metadata": "^0.1.13",
+		"square": "^17.2.0",
+		"typedi": "^0.10.0"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.17.2",
