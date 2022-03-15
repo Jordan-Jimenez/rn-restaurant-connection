@@ -9,7 +9,23 @@ locationsRouter.get("/", async (req, res) => {
 	try {
 		const locations = Container.get(SquareLocations);
 
-		res.send(await locations.getList());
+		const data = await locations.getList();
+
+		let stores: Store[] = [];
+
+		data.locations.forEach((location) => {
+			stores.push({
+				id: location.id,
+				streetAddress: location?.address?.addressLine1,
+				city: location?.address?.locality,
+				state: location?.address?.administrativeDistrictLevel1,
+				zipCode: location?.address?.postalCode,
+				coordinates: location?.coordinates,
+				businessHours: location.businessHours?.periods,
+			});
+		});
+
+		res.send(stores);
 	} catch (e) {
 		res.send(e);
 	}
@@ -18,7 +34,17 @@ locationsRouter.get("/", async (req, res) => {
 locationsRouter.get("/:locationId", async (req, res) => {
 	const locations = Container.get(SquareLocations);
 
-	res.send(await locations.getLocationById(req.params.locationId));
+	const location = await locations.getLocationById(req.params.locationId);
+
+	res.send({
+		id: location.id,
+		streetAddress: location?.address?.addressLine1,
+		city: location?.address?.locality,
+		state: location?.address?.administrativeDistrictLevel1,
+		zipCode: location?.address?.postalCode,
+		coordinates: location?.coordinates,
+		businessHours: location.businessHours?.periods,
+	});
 });
 
 export default locationsRouter;
