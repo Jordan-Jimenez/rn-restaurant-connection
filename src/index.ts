@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 
 import locationsRouter from "./rest/locations";
+import menuRouter from "./rest/menu";
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ dotenv.config();
 	app.use(bodyParser.json());
 
 	app.use("/locations", locationsRouter);
+	app.use("/menu", menuRouter);
 
 	const httpServer = http.createServer(app);
 
