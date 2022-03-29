@@ -60,6 +60,18 @@ menuRouter.get("/items", async (req, res) => {
 	}
 });
 
+menuRouter.get("/items/images/:imageId", async (req, res) => {
+	try {
+		const menu = Container.get(SquareMenu);
+
+		const item = await menu.getItemById(req.params.imageId);
+
+		res.send({ name: item.imageData.name, url: item.imageData.url });
+	} catch (e) {
+		res.send(e);
+	}
+});
+
 menuRouter.get("/items/:itemId", async (req, res) => {
 	try {
 		const menu = Container.get(SquareMenu);
