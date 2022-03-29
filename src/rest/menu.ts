@@ -11,19 +11,19 @@ menuRouter.get("/categories", async (req, res) => {
 
 		const list = await menu.getCategories(req.query.storeId as string);
 
-		let obj = {};
+		let arr = [];
 
 		for (let i = 0; i < list.length; i++) {
 			const item = list[i];
 
 			//@ts-ignore
-			obj[i] = {
+			arr.push({
 				id: item.id,
 				name: item.categoryData.name || "null",
-			};
+			});
 		}
 
-		res.json(obj);
+		res.send(arr);
 	} catch (e) {
 		res.send(e);
 	}
@@ -35,13 +35,13 @@ menuRouter.get("/items", async (req, res) => {
 
 		const list = await menu.getItems(req.query.storeId as string);
 
-		let obj = {};
+		let arr = [];
 
 		for (let i = 0; i < list.length; i++) {
 			const item = list[i];
 
 			//@ts-ignore
-			obj[i] = {
+			arr.push({
 				id: item.id,
 				name: item.itemData.name || "null",
 				description: item.itemData.description || "null",
@@ -51,10 +51,10 @@ menuRouter.get("/items", async (req, res) => {
 					item.itemData.variations[0].itemVariationData.priceMoney.amount.toString() ||
 					"null",
 				imageId: item.itemData.imageIds?.[0] || "null",
-			} as MenuItem;
+			} as MenuItem);
 		}
 
-		res.json(obj);
+		res.send(arr);
 	} catch (e) {
 		res.send(e);
 	}
@@ -66,30 +66,33 @@ menuRouter.get("/items/:itemId", async (req, res) => {
 
 		const item = await menu.getItemById(req.params.itemId);
 
-		let itemVariations = {};
+		let itemVariations = [];
 
 		for (let j = 0; j < item.itemData.variations.length; j++) {
 			//@ts-ignore
-			itemVariations[j] = {
-				id: item.itemData.variations[j].id,
-				name: item.itemData.variations[j].itemVariationData.name,
+			itemVariations.push({
+				id: item.itemData.variations[j].id || "null",
+				name: item.itemData.variations[j].itemVariationData.name || "null",
 				price:
 					item.itemData.variations[
 						j
-					].itemVariationData.priceMoney.amount.toString(),
-				ordinal: item.itemData.variations[j].itemVariationData.ordinal,
-			} as ItemVariation;
+					].itemVariationData.priceMoney.amount.toString() || "null",
+				ordinal:
+					item.itemData.variations[j].itemVariationData.ordinal || "null",
+			} as ItemVariation);
 		}
 
-		res.json({
+		const obj = {
 			id: item.id,
 			name: item.itemData.name,
 			description: item.itemData.description,
 			categoryId: item.itemData.categoryId,
 			productType: item.itemData.productType,
 			variations: itemVariations,
-			image: item.imageData.url,
-		} as MenuItem);
+			imageId: item.itemData.imageIds?.[0],
+		} as MenuItem;
+
+		res.send(obj);
 	} catch (e) {
 		res.send(e);
 	}
@@ -104,13 +107,13 @@ menuRouter.get("/items/category/:categoryId", async (req, res) => {
 			req.query.storeId as string
 		);
 
-		let obj = {};
+		let arr = [];
 
 		for (let i = 0; i < list.items.length; i++) {
 			const item = list.items[i];
 
 			//@ts-ignore
-			obj[i] = {
+			arr.push({
 				id: item.id,
 				name: item.itemData.name || "null",
 				description: item.itemData.description || "null",
@@ -119,10 +122,10 @@ menuRouter.get("/items/category/:categoryId", async (req, res) => {
 					item.itemData.variations[0].itemVariationData.priceMoney.amount.toString() ||
 					"null",
 				imageId: item.itemData.imageIds?.[0] || "null",
-			} as MenuItem;
+			} as MenuItem);
 		}
 
-		res.json(obj);
+		res.send(arr);
 	} catch (e) {
 		res.send(e);
 	}
