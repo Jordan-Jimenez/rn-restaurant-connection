@@ -95,6 +95,29 @@ class SquareMenu {
 
 		return response.result.objects;
 	}
+
+	public async getItemsById(objectIds?: string[]) {
+		try {
+			const response = await this.client.catalogApi.batchRetrieveCatalogObjects(
+				{
+					objectIds,
+				}
+			);
+
+			if (response.result.errors) {
+				throw new Error(
+					"code: " +
+						response.result.errors[0].code +
+						" category: " +
+						response.result.errors[0].category
+				);
+			}
+
+			return response.result.objects;
+		} catch (e) {
+			throw new Error(e);
+		}
+	}
 }
 
 export default SquareMenu;

@@ -6,6 +6,6 @@ interface MenuItem {
 	productType?: string;
 	price?: string;
 	imageId?: string;
-	image?: string;
 	variations?: ItemVariation[];
+	optionIds?: string[];
 }

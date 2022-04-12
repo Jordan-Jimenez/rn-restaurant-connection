@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request } from "express";
 import Container from "typedi";
 
 import SquareMenu from "../services/Square/MenuService";
@@ -66,11 +66,37 @@ menuRouter.get("/items/images/:imageId", async (req, res) => {
 
 		const item = await menu.getItemById(req.params.imageId);
 
-		res.send({ name: item.imageData.name, url: item.imageData.url });
+		res.send({ label: item.imageData.name, url: item.imageData.url });
 	} catch (e) {
 		res.send(e);
 	}
 });
+
+menuRouter.get(
+	"/item-options",
+	async (req: Request<any, any, any, { optionIds: string[] }>, res) => {
+		try {
+			const menu = Container.get(SquareMenu);
+
+			res.send(
+				(await menu.getItemsById(req.query.optionIds)).map((o) => {
+					return {
+						id: o.id,
+						name: o.itemOptionData.name,
+						values: o.itemOptionData.values.map((v) => {
+							return {
+								id: v.id,
+								name: v.itemOptionValueData.name,
+							} as ItemOptionValue;
+						}),
+					} as ItemOption;
+				})
+			);
+		} catch (e) {
+			res.send(e);
+		}
+	}
+);
 
 menuRouter.get("/items/:itemId", async (req, res) => {
 	try {
@@ -78,11 +104,11 @@ menuRouter.get("/items/:itemId", async (req, res) => {
 
 		const item = await menu.getItemById(req.params.itemId);
 
-		let itemVariations = [];
+		let variations = [];
 
 		for (let j = 0; j < item.itemData.variations.length; j++) {
 			//@ts-ignore
-			itemVariations.push({
+			variations.push({
 				id: item.itemData.variations[j].id || "null",
 				name: item.itemData.variations[j].itemVariationData.name || "null",
 				price:
@@ -91,6 +117,8 @@ menuRouter.get("/items/:itemId", async (req, res) => {
 					].itemVariationData.priceMoney.amount.toString() || "null",
 				ordinal:
 					item.itemData.variations[j].itemVariationData.ordinal || "null",
+				options:
+					item.itemData.variations[j].itemVariationData.itemOptionValues || [],
 			} as ItemVariation);
 		}
 
@@ -100,8 +128,11 @@ menuRouter.get("/items/:itemId", async (req, res) => {
 			description: item.itemData.description,
 			categoryId: item.itemData.categoryId,
 			productType: item.itemData.productType,
-			variations: itemVariations,
+			variations,
 			imageId: item.itemData.imageIds?.[0],
+			optionIds: item.itemData.itemOptions
+				? item.itemData.itemOptions.map((o) => o.itemOptionId)
+				: [],
 		} as MenuItem;
 
 		res.send(obj);
